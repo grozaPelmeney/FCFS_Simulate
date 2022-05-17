@@ -1,6 +1,5 @@
 package com.example.fcfssimulate
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.fcfssimulate.models.ProcessControlBlock
@@ -9,17 +8,22 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.properties.Delegates
 
-
-//scheduler
 class MainViewModel : ViewModel() {
-    val readyProcesses = MutableLiveData<List<ProcessControlBlock>>()
-    val waitingProcesses = MutableLiveData<List<ProcessControlBlock>>()
+    val readyProcessesCB = MutableLiveData<List<ProcessControlBlock>>()
+    val waitingProcessesCB = MutableLiveData<List<ProcessControlBlock>>()
     val runningProcess = MutableLiveData<ProcessModel?>()
     val absoluteTicks = MutableLiveData<Int>()
 
     private val scheduler by lazy { Scheduler() }
+
+    fun getProcessNameByPID(PID: Int) : String {
+        return scheduler.getProcessNameByPID(PID = PID)
+    }
+
+    fun addProcess(count: Int, name: String? = null, cpuBurst: Int? = null, ioBurst: Int? = null) {
+        scheduler.addProcess(count, name, cpuBurst, ioBurst)
+    }
 
     fun startScheduling() {
         scheduler.startScheduling()
@@ -31,11 +35,12 @@ class MainViewModel : ViewModel() {
             while (true) {
                 if (Core.isPause()) continue
 
-                readyProcesses.postValue(scheduler.getReadyProcessesCB())
-                waitingProcesses.postValue(scheduler.getWaitingProcessesCB())
+                readyProcessesCB.postValue(scheduler.getReadyProcessesCB())
+                waitingProcessesCB.postValue(scheduler.getWaitingProcessesCB())
                 runningProcess.postValue(scheduler.getRunningProcess())
                 absoluteTicks.postValue(Core.getAbsoluteTicks())
-                delay(Core.getReferMillsToTicks())
+
+                delay(Core.getReferMillsToTicks() / 2)
             }
         }
     }

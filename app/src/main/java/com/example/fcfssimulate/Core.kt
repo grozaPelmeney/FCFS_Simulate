@@ -14,10 +14,10 @@ object Core {
 
     private var absoluteTicks = 0
 
-    private var secondsToRefer = 5 // 5 секунд..
+    private var secondsToRefer = 6 // 5 секунд..
     private var ticksToRefer = 10 // ..это 10 тиков
 
-    private var maxProcessCount = 10
+ //   private var maxProcessCount = 10
 
     private fun startTickCounter() {
         CoroutineScope(Dispatchers.Default).launch {
@@ -36,7 +36,10 @@ object Core {
     fun playSimulation() { pause = false }
 
     fun getReferMillsToTicks() = (1000 * secondsToRefer / ticksToRefer).toLong()
+    fun getAbsoluteTicks() = absoluteTicks
     fun getTicks() = ticksToRefer
     fun getSeconds() = secondsToRefer
-    fun getAbsoluteTicks() = absoluteTicks
+
+    fun setTicks(ticks: Int) { ticksToRefer = ticks }
+    fun setSeconds(seconds: Int) { secondsToRefer = seconds }
 }
