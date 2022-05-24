@@ -14,8 +14,8 @@ object Core {
 
     private var absoluteTicks = 0
 
-    private var secondsToRefer = 6 // 5 секунд..
-    private var ticksToRefer = 10 // ..это 10 тиков
+    private var secondsToRefer = 2 // 2 секунды..
+    private var ticksToRefer = 3 // ..это 3 тика
 
  //   private var maxProcessCount = 10
 

@@ -116,7 +116,7 @@ fun DrawPauseBtn() {
         }) {
         Icon(
             painter = if (isPause.value) { painterResource(id = R.drawable.ic_play) }
-            else { painterResource(id = R.drawable.ic_pause) },
+                        else { painterResource(id = R.drawable.ic_pause) },
             contentDescription = null
         )
     }
@@ -134,6 +134,8 @@ fun ShowAddProcessDialog(
     val processName = remember { mutableStateOf("") }
     val cpuBurst = remember { mutableStateOf(0) }
     val ioBurst = remember { mutableStateOf(0) }
+    val usingIOCount = remember { mutableStateOf(0) }
+
     AlertDialog(
         onDismissRequest = {
             onDismiss()
@@ -165,10 +167,14 @@ fun ShowAddProcessDialog(
                            modifier = Modifier.weight(2f),
                            enabled = addManyProcesses.value,
                            value = processesCount.value.toString(),
-                           onValueChange = { processesCount.value = it.toIntOrNull() ?: 0 },
+                           onValueChange = { processesCount.value = it.toIntOrNull() ?: 0  },
                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                        )
                    }
+
+                   Divider(color = Color.Black, modifier = Modifier
+                       .fillMaxWidth()
+                       .height(1.dp))
 
                    Column(modifier = Modifier.padding(bottom = 5.dp)) {
                        Text(text = "Название процесса:")
@@ -212,6 +218,22 @@ fun ShowAddProcessDialog(
                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                        )
                    }
+
+                   Row(
+                       modifier = Modifier.padding(bottom = 5.dp),
+                       verticalAlignment = Alignment.CenterVertically) {
+                       Text(
+                           modifier = Modifier.weight(5f),
+                           text = "Количество операций ввода-вывода:"
+                       )
+                       TextField(
+                           modifier = Modifier.weight(2f),
+                           enabled = !addManyProcesses.value,
+                           value = usingIOCount.value.toString(),
+                           onValueChange = { usingIOCount.value = it.toIntOrNull() ?: 0 },
+                           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                       )
+                   }
                }
         },
         confirmButton = {
@@ -222,7 +244,8 @@ fun ShowAddProcessDialog(
                             count = 1,
                             name = processName.value,
                             cpuBurst = cpuBurst.value,
-                            ioBurst = ioBurst.value)
+                            ioBurst = ioBurst.value,
+                            usingIOCount = usingIOCount.value)
                     } else {
                         viewModel.addProcess(count = processesCount.value)
                     }

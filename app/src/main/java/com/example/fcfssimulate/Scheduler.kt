@@ -131,32 +131,54 @@ class Scheduler {
         processes.remove(process.getPCB()!!)
     }
 
-    fun addProcess(count: Int, name: String? = null, cpuBurst: Int? = null, ioBurst: Int? = null) {
+    fun addProcess(count: Int, name: String? = null, cpuBurst: Int? = null, ioBurst: Int? = null, usingIO: Int? = null) {
         val processes = mutableListOf<ProcessModel>()
+
         if (count == 1) {
+            val neededProcessTime = cpuBurst!!
+            val neededIOTime =
+                if (ioBurst!! == 0) Random.nextInt(from = 1, until = 5) //если указали, что ввода-вывода нет, то делаем минимальный ввод-вывод
+                else ioBurst
+            val usingIOCount =
+                if (usingIO!! == 1 || usingIO == 0) usingIO //если количество io операций 1 или 0, то можно ничего не менять
+                else if (neededIOTime <= 5) 1 //если минимальное время на ввод=вывод, то будем его делать 1 раз
+                else usingIO
+
             val newProcess =
                 ProcessModel(
                     PID = nextPID++,
                     name = name!!,
-                    neededProcessTime = cpuBurst!!,
-                    neededIOTime = ioBurst!!
+                    neededProcessTime = neededProcessTime,
+                    neededIOTime = neededIOTime,
+                    usingIOCount = usingIOCount
                 )
             processes.add(newProcess)
+
         } else {
             repeat(count) {
+                val neededProcessTime = Random.nextInt(from = 10, until = 50)
+                val neededIOTime = Random.nextInt(from = 4, until = 50) //рандом от 4 дает допускает процессы с минимальным вводом-выводом
+                val usingIOCount =
+                    if (withChance(percent = 2)) 0 //c шансом 2 процента попалется процесс без ввода-вывода
+                    else if (neededIOTime <= 5) 1 //если минимальное время на ввод=вывод, то будем его делать 1 раз
+                    else Random.nextInt(from = 1, until = 5)
+
                 val newProcess =
                     ProcessModel(
                         PID = nextPID++,
                         name = "process${nextPID - 1}",
-                        neededProcessTime = Random.nextInt(from = 10, until = 50),
-                        neededIOTime = if (Random.nextBoolean()) 0 else Random.nextInt(from = 10, until = 50)
-
+                        neededProcessTime = neededProcessTime,
+                        neededIOTime = neededIOTime,
+                        usingIOCount = usingIOCount
                     )
                 processes.add(newProcess)
             }
         }
         startProcessesScheduling(processes = processes)
     }
+
+    private fun withChance(percent: Int) =
+        Random.nextInt(until = 100) < percent
 
     fun getRunningProcess() = runningProcess
     fun getReadyProcessesCB() = readyProcessesCB

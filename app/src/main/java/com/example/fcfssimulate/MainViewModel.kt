@@ -21,8 +21,8 @@ class MainViewModel : ViewModel() {
         return scheduler.getProcessNameByPID(PID = PID)
     }
 
-    fun addProcess(count: Int, name: String? = null, cpuBurst: Int? = null, ioBurst: Int? = null) {
-        scheduler.addProcess(count, name, cpuBurst, ioBurst)
+    fun addProcess(count: Int, name: String? = null, cpuBurst: Int? = null, ioBurst: Int? = null, usingIOCount: Int? = null) {
+        scheduler.addProcess(count, name, cpuBurst, ioBurst, usingIOCount)
     }
 
     fun startScheduling() {
